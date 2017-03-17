@@ -12,9 +12,14 @@ Output = {
     action = write
     writeSequenceKey = true
     outputNodeNames = OutputNodes.z
-    outputPath = $RunDir$/OutputNodes
+    outputPath = $RunDir$/Actual
     minibatchSize = 2
     modelPath = "$EvalModelDir$/test_base64.model"
+
+    format=[
+        sequencePrologue="prefix_%k\t"
+        elementSeparator="\t"
+    ]
 
     reader = {
         verbosity = 0 ;  randomize = false
