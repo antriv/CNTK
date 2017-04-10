@@ -10,8 +10,10 @@ import pytest
 
 from cntk.io import MinibatchSource, CTFDeserializer, StreamDefs, StreamDef, \
     ImageDeserializer, _ReaderConfig, FULL_DATA_SWEEP, \
-    sequence_to_cntk_text_format, UserMinibatchSource, StreamInformation
+    sequence_to_cntk_text_format, UserMinibatchSource, StreamInformation, \
+    MinibatchData
 import cntk.io.transforms as xforms
+from cntk.core import Value
 
 AA = np.asarray
 
@@ -351,13 +353,28 @@ filename2	0
 
 
 class UserCTFSource(UserMinibatchSource):
-    def __init__(self):
+    def __init__(self, f_dim, l_dim):
+        self.f_dim, self.l_dim = f_dim, l_dim
+
         super(UserCTFSource, self).__init__()
 
     def stream_infos(self):
-        f = StreamInformation("features", 0, 'dense', np.float32, (1,))
-        s = StreamInformation("labels", 1, 'dense', np.float32, (1,))
-        return [f, s]
+        return [StreamInformation("features", 0, 'dense', np.float32, (1,)),
+                StreamInformation("labels", 1, 'dense', np.float32, (1,))]
+
+    def next_minibatch(self, mb_size):
+        mb = {
+                self._fsi: MinibatchData(
+                                Value(batch=np.random.rand((mb_size, self.f_dim))),
+                                num_sequences=mb_size, num_samples=mb_size,
+                                sweep_end=False),
+                self._lsi: MinibatchData(
+                                Value(batch=np.random.rand((mb_size, self.l_dim))),
+                                num_sequences=mb_size, num_samples=mb_size,
+                                sweep_end=False)
+                }
+
+        return mb
 
 
 def test_usermbsource(tmpdir):
@@ -378,7 +395,7 @@ def test_usermbsource(tmpdir):
     n_labels = n_mb[n_labels_si]
 
     # Setting up the user MB source
-    u_mb_source = UserCTFSource()
+    u_mb_source = UserCTFSource(input_dim, num_output_classes)
     u_features_si = u_mb_source['features']
     u_labels_si = u_mb_source['labels']
     u_mb = u_mb_source.next_minibatch(7)

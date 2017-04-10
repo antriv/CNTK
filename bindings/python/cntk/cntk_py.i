@@ -1462,7 +1462,7 @@ namespace CNTK
 
                 streamInfos.insert(*var);
 
-                Py_DECREF(item);
+                //Py_DECREF(item);
             }
 
             Py_DECREF(iterator);

@@ -26,7 +26,14 @@ class MinibatchData(cntk_py.MinibatchData, ArrayMixin):
     '''
     Holds a minibatch of input data. This is never directly created, but
     only returned by :class:`MinibatchSource` instances.
+
+    Args:
+      TODO
     '''
+
+    def __init__(self, value, num_sequences, num_samples, sweep_end):
+        super(MinibatchData, self).__init__(value, num_sequences, num_samples,
+                                            sweep_end)
 
     @property
     def num_sequences(self):
@@ -356,7 +363,11 @@ class StreamInformation(cntk_py.StreamInformation):
     Stream information container.
 
     Args:
-        TODO
+        stream_name (str): name of the stream
+        stream_id (int): unique ID of the stream
+        storage_format (str): 'dense' or 'sparse'
+        dtype (NumPy type): data type
+        sample_layout (tuple): shape of the elements
     '''
 
     _storage = {'dense': cntk_py.StorageFormat_Dense,
@@ -392,7 +403,6 @@ class UserMinibatchSource(cntk_py.SwigMinibatchSource):
     def _stream_infos(self, sinfos=None):
         # sinfos is a list of stream information, which we need to fill in
         # place, # because Swig demands it that way.
-        import ipdb;ipdb.set_trace()
         sinfos[:] = self.stream_infos()
 
     def stream_info(self, name):
@@ -401,7 +411,6 @@ class UserMinibatchSource(cntk_py.SwigMinibatchSource):
         Throws an exception if there are none or multiple streams with this
         same name.
         '''
-        import ipdb;ipdb.set_trace()
         return super(UserMinibatchSource, self).stream_info(name)
 
     def __getitem__(self, name):
@@ -414,6 +423,7 @@ class UserMinibatchSource(cntk_py.SwigMinibatchSource):
               :class:`~cntk.cntk_py.StreamInformation` for
         '''
         return self.stream_info(name)
+
 
 class _ReaderConfig(dict):
 
