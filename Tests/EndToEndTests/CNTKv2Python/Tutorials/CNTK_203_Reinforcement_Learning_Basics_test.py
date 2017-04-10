@@ -11,7 +11,7 @@ abs_path = os.path.dirname(os.path.abspath(__file__))
 notebook = os.path.join(abs_path, "..", "..", "..", "..", "Tutorials", "CNTK_203_Reinforcement_Learning_Basics.ipynb")
 notebook_timeoutSeconds = 450
 
-def get_output_stream_from_in_cell(cell, stream_name='stdout'):
+def get_output_stream_from_cell(cell, stream_name='stdout'):
     return "\n".join([output.text for output in cell.get('outputs', [])
         if output.output_type == 'stream' and output.name == stream_name])
 
